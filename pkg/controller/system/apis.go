@@ -20,7 +20,7 @@ type SysApis interface {
 	Create(req *reqSystem.CreateAPIsReq) error
 	Delete(id int) error
 	Update(id int, req *reqSystem.UpdateAPIsReq) error
-	List(apiGroup string, limit, page int) (error, interface{})
+	List(apiGroup string) (error, interface{})
 	Get(id int) (error, *system.APIs)
 	GetApiGroup() (error, []string)
 }
@@ -72,14 +72,10 @@ func (sa *sysApis) Update(id int, req *reqSystem.UpdateAPIsReq) error {
 
 }
 
-func (sa *sysApis) List(apiGroup string, limit, page int) (error, interface{}) {
-	startSet := (page - 1) * limit
-	resApis := new(struct {
-		Items []system.APIs
-		Total int64
-	})
-	if err := global.GORM.WithContext(sa.ctx).Model(&system.APIs{}).Where("api_group LIKE ? ", "%"+apiGroup+"%").Count(&resApis.Total).
-		Limit(limit).Offset(startSet).Find(&resApis.Items).Error; err != nil {
+func (sa *sysApis) List(apiGroup string) (error, interface{}) {
+	var resApis []system.APIs
+	if err := global.GORM.WithContext(sa.ctx).Model(&system.APIs{}).Where("api_group LIKE ? ", "%"+apiGroup+"%").
+		Find(&resApis).Error; err != nil {
 		return global.GetErr(sa.tips, err), nil
 	}
 	return nil, &resApis
@@ -94,18 +90,9 @@ func (sa *sysApis) Get(id int) (error, *system.APIs) {
 }
 
 func (sa *sysApis) GetApiGroup() (error, []string) {
-	var apis []system.APIs
-	exit := make(map[string]bool)
-	if err := global.GORM.WithContext(sa.ctx).Model(&system.APIs{}).Find(&apis).Error; err != nil {
-		return global.GetErr(sa.tips, err), nil
-	}
 	var apiGroups []string
-	for _, api := range apis {
-		if exit[api.ApiGroup] {
-			continue
-		}
-		exit[api.ApiGroup] = true
-		apiGroups = append(apiGroups, api.ApiGroup)
+	if err := global.GORM.WithContext(sa.ctx).Model(&system.APIs{}).Distinct().Pluck("api_group", &apiGroups).Error; err != nil {
+		return global.GetErr(sa.tips, err), nil
 	}
 	return nil, apiGroups
 }

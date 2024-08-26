@@ -33,11 +33,11 @@ func NewSysRole() RoleInterface {
 func (sr *sysRole) Create(ctx *gin.Context) {
 	body := new(reqSystem.CreateRoleReq)
 	if err := ctx.ShouldBindJSON(&body); err != nil {
-		global.ReturnContext(ctx).Failed("参数错误", nil)
+		global.ReturnContext(ctx).Failed("参数错误", err.Error())
 		return
 	}
 	if err := system.NewSysRole(ctx).Create(body); err != nil {
-		global.ReturnContext(ctx).Failed(err.Error(), nil)
+		global.ReturnContext(ctx).Failed("创建失败", err.Error())
 		return
 	}
 	global.ReturnContext(ctx).Successful("创建成功", nil)
@@ -47,7 +47,7 @@ func (sr *sysRole) Create(ctx *gin.Context) {
 func (sr *sysRole) Delete(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	if err := system.NewSysRole(ctx).Delete(id); err != nil {
-		global.ReturnContext(ctx).Failed("删除失败", nil)
+		global.ReturnContext(ctx).Failed("删除失败", err.Error())
 		return
 	}
 	global.ReturnContext(ctx).Successful("删除成功", nil)
@@ -57,28 +57,19 @@ func (sr *sysRole) Update(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	body := new(reqSystem.CreateRoleReq)
 	if err := ctx.ShouldBindJSON(&body); err != nil {
-		global.ReturnContext(ctx).Failed("参数错误", nil)
+		global.ReturnContext(ctx).Failed("参数错误", err.Error())
 		return
 	}
 	if err := system.NewSysRole(ctx).Update(id, body); err != nil {
-		global.ReturnContext(ctx).Failed("更新失败", nil)
+		global.ReturnContext(ctx).Failed("更新失败", err.Error())
 		return
 	}
 	global.ReturnContext(ctx).Successful("更新成功", nil)
 }
 
 func (sr *sysRole) List(ctx *gin.Context) {
-	params := new(struct {
-		Name  string `form:"name"`
-		Limit int    `form:"limit"`
-		Page  int    `form:"page"`
-	})
-	if err := ctx.ShouldBindQuery(&params); err != nil {
-		global.ReturnContext(ctx).Failed("参数错误", nil)
-		return
-	}
-	if err, data := system.NewSysRole(ctx).List(params.Name, params.Limit, params.Page); err != nil {
-		global.ReturnContext(ctx).Failed(err.Error(), nil)
+	if err, data := system.NewSysRole(ctx).List(ctx.Param("role_name")); err != nil {
+		global.ReturnContext(ctx).Failed("查询失败", err.Error())
 		return
 	} else {
 		global.ReturnContext(ctx).Successful("查询成功", data)
@@ -88,7 +79,7 @@ func (sr *sysRole) List(ctx *gin.Context) {
 func (sr *sysRole) Get(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	if err, data := system.NewSysRole(ctx).Get(id); err != nil {
-		global.ReturnContext(ctx).Failed(err.Error(), nil)
+		global.ReturnContext(ctx).Failed("查询失败", err.Error())
 		return
 	} else {
 		global.ReturnContext(ctx).Successful("查询成功", data)

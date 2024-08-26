@@ -22,7 +22,7 @@ type SysRole interface {
 	Create(req *reqSystem.CreateRoleReq) error
 	Delete(id int) error
 	Update(id int, req *reqSystem.CreateRoleReq) error
-	List(roleName string, limit, page int) (error, interface{})
+	List(roleName string) (error, interface{})
 	Get(id int) (error, *system.Role)
 }
 type sysRole struct {
@@ -76,17 +76,10 @@ func (sr *sysRole) Update(id int, req *reqSystem.CreateRoleReq) error {
 	return sr.association(r, req.Users, req.Menus)
 }
 
-func (sr *sysRole) List(roleName string, limit, page int) (error, interface{}) {
-	startSet := (page - 1) * limit
-	resRole := new(struct {
-		Items []system.Role
-		Total int64
-	})
-
+func (sr *sysRole) List(roleName string) (error, interface{}) {
+	var resRole []system.Role
 	if err := global.GORM.WithContext(sr.ctx).Model(&system.Role{}).Where("name LIKE ?", "%"+roleName+"%").
-		Preload("Users").
-		Count(&resRole.Total).
-		Limit(limit).Offset(startSet).Find(&resRole.Items).Error; err != nil {
+		Preload("Users").Find(&resRole).Error; err != nil {
 		return global.GetErr(sr.tips, err), nil
 	}
 	return nil, &resRole
@@ -128,7 +121,7 @@ func (sr *sysRole) association(role *system.Role, userIDs, menuIDs []int) error 
 
 func (sr *sysRole) clear(roles ...*system.Role) {
 	for _, role := range roles {
-		global.GORM.WithContext(sr.ctx).Model(role).Association("Users").Clear()
-		global.GORM.WithContext(sr.ctx).Model(role).Association("Menus").Clear()
+		_ = global.GORM.WithContext(sr.ctx).Model(role).Association("Users").Clear()
+		_ = global.GORM.WithContext(sr.ctx).Model(role).Association("Menus").Clear()
 	}
 }

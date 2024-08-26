@@ -20,7 +20,7 @@ type SysRBAC interface {
 	Create(rules [][]string) error
 	Delete(id int) bool
 	Update(id int, rule []string) error
-	List(v0, v1, v2, v3 string, limit, page int) (error, interface{})
+	List(v0, v1, v2, v3 string) (error, interface{})
 }
 type sysRbac struct {
 	tips string
@@ -77,15 +77,10 @@ func (sr *sysRbac) Update(id int, rule []string) error {
 	return nil
 }
 
-func (sr *sysRbac) List(v0, v1, v2, v3 string, limit, page int) (error, interface{}) {
-	startSet := (page - 1) * limit
-	resCasbinRules := new(struct {
-		Items []gormadapter.CasbinRule
-		Total int64
-	})
+func (sr *sysRbac) List(v0, v1, v2, v3 string) (error, interface{}) {
+	var resCasbinRules []gormadapter.CasbinRule
 	if err := global.GORM.Model(&gormadapter.CasbinRule{}).WithContext(sr.ctx).Where("v0 LIKE ? and v1 LIKE ? and v2 LIKE ? and v3 LIKE ?",
-		"%"+v0+"%", "%"+v1+"%", "%"+v2+"%", "%"+v3+"%").Count(&resCasbinRules.Total).
-		Offset(startSet).Limit(limit).Find(&resCasbinRules.Items).Error; err != nil {
+		"%"+v0+"%", "%"+v1+"%", "%"+v2+"%", "%"+v3+"%").Find(&resCasbinRules).Error; err != nil {
 		return err, nil
 	}
 	return nil, &resCasbinRules

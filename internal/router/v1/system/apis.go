@@ -12,15 +12,6 @@ import (
 	apiSystem "go-easy-admin/api/system"
 )
 
-/*
-	Create(ctx *gin.Context)
-	Delete(ctx *gin.Context)
-	Update(ctx *gin.Context)
-	List(ctx *gin.Context)
-	Get(ctx *gin.Context)
-	GetApiGroup(ctx *gin.Context)
-*/
-
 func Apis(r *gin.RouterGroup) gin.IRoutes {
 	{
 		r.POST("/create", apiSystem.NewSysApis().Create)

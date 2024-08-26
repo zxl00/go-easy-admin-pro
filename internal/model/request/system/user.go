@@ -10,6 +10,7 @@ package system
 type CreateUserReq struct {
 	Username string `json:"userName" binding:"required"`            // 用户登录名
 	Password string `json:"password" aes:"true" binding:"required"` // 用户登录密码
+	Avatar   string `json:"avatar"`
 	Email    string `json:"email" binding:"required,email"`
 	Phone    string `json:"phone" binding:"required"`
 	Roles    []int  `json:"roles" binding:"required"`
@@ -18,6 +19,7 @@ type CreateUserReq struct {
 type UpdateUserReq struct {
 	Username string `json:"userName"`            // 用户登录名
 	Password string `json:"password" aes:"true"` // 用户登录密码
+	Avatar   string `json:"avatar"`
 	Email    string `json:"email"`
 	Phone    string `json:"phone"`
 	Roles    []int  `json:"roles"`

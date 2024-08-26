@@ -51,7 +51,7 @@ func (sm *sysMenu) Create(req *reqSystem.CreateMenuReq) error {
 
 // 级联删除菜单
 
-var MenuSlice []*system.Menu
+//var MenuSlice []*system.Menu
 
 func (sm *sysMenu) Delete(id int) error {
 	menu := new(system.Menu)
@@ -62,15 +62,15 @@ func (sm *sysMenu) Delete(id int) error {
 		}
 		return err
 	}
-	err := GetChildren(menu)
-	if err != nil {
-		return err
+	// 判断是否存在子级菜单
+	if hasChildren(menu) {
+		return global.OtherErr(errors.New("存在子级菜单"), "请先删除子级菜单")
 	}
-	if err = global.GORM.WithContext(sm.ctx).Delete(MenuSlice).Error; err != nil {
+	if err := global.GORM.WithContext(sm.ctx).Delete(menu).Error; err != nil {
 		return global.DeleteErr(sm.tips, err)
 	}
 	// 清空关联
-	sm.clear(MenuSlice...)
+	sm.clear(menu)
 	return nil
 }
 
@@ -123,13 +123,27 @@ func GetChildren(menu *system.Menu) error {
 		Find(&menu.Children).Error; err != nil {
 		return global.OtherErr(errors.New("获取子菜单失败"), err.Error())
 	}
-	MenuSlice = append(MenuSlice, menu)
+	//MenuSlice = append(MenuSlice, menu)
 	for i := range menu.Children {
 		if err := GetChildren(&menu.Children[i]); err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+func hasChildren(menu *system.Menu) bool {
+	var count int64
+	if err := global.GORM.Where("parent_id = ?", menu.ID).Count(&count).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return true
+		}
+		return false
+	}
+	if count > 0 {
+		return true
+	}
+	return false
 }
 
 func (sm *sysMenu) association(menu *system.Menu, apisIDs []int) error {
@@ -149,8 +163,8 @@ func (sm *sysMenu) association(menu *system.Menu, apisIDs []int) error {
 
 func (sm *sysMenu) clear(menus ...*system.Menu) {
 	for _, menu := range menus {
-		global.GORM.WithContext(sm.ctx).Model(&menu).Association("APIs").Clear()
-		global.GORM.WithContext(sm.ctx).Model(&menu).Association("Roles").Clear()
+		_ = global.GORM.WithContext(sm.ctx).Model(&menu).Association("APIs").Clear()
+		_ = global.GORM.WithContext(sm.ctx).Model(&menu).Association("Roles").Clear()
 	}
-	MenuSlice = nil
+	//MenuSlice = nil
 }
