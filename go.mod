@@ -9,8 +9,8 @@ require (
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-ldap/ldap/v3 v3.4.8
-	github.com/google/uuid v1.6.0
 	github.com/jinzhu/copier v0.4.0
+	github.com/juju/ratelimit v1.0.2
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.19.0
 	gorm.io/driver/mysql v1.5.7
@@ -38,6 +38,7 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect

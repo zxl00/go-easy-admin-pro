@@ -3,7 +3,7 @@ server:
   address: 127.0.0.1
   name: go-easy-admin
   # # 生产环境建议使用 release，debug：可以使用debug模式
-  model: release
+  model: debug
   adminUser: admin
   adminPwd: 25285442ebc7d3a0c20047e01d341c31
 
