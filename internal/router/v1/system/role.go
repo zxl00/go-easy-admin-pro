@@ -17,7 +17,7 @@ func Role(r *gin.RouterGroup) gin.IRoutes {
 		r.POST("/create", apiSystem.NewSysRole().Create)
 		r.POST("/delete/:id", apiSystem.NewSysRole().Delete)
 		r.POST("/update/:id", apiSystem.NewSysRole().Update)
-		r.GET("/list/:role_name", apiSystem.NewSysRole().List)
+		r.GET("/list", apiSystem.NewSysRole().List)
 		r.GET("/get/:id", apiSystem.NewSysRole().Get)
 	}
 	return r

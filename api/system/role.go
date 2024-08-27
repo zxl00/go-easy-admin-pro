@@ -68,7 +68,7 @@ func (sr *sysRole) Update(ctx *gin.Context) {
 }
 
 func (sr *sysRole) List(ctx *gin.Context) {
-	if err, data := system.NewSysRole(ctx).List(ctx.Param("role_name")); err != nil {
+	if err, data := system.NewSysRole(ctx).List(); err != nil {
 		global.ReturnContext(ctx).Failed("查询失败", err.Error())
 		return
 	} else {

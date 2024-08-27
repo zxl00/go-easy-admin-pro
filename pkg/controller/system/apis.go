@@ -20,7 +20,7 @@ type SysApis interface {
 	Create(req *reqSystem.CreateAPIsReq) error
 	Delete(id int) error
 	Update(id int, req *reqSystem.UpdateAPIsReq) error
-	List(apiGroup string) (error, interface{})
+	List() (error, interface{})
 	Get(id int) (error, *system.APIs)
 	GetApiGroup() (error, []string)
 }
@@ -72,9 +72,9 @@ func (sa *sysApis) Update(id int, req *reqSystem.UpdateAPIsReq) error {
 
 }
 
-func (sa *sysApis) List(apiGroup string) (error, interface{}) {
+func (sa *sysApis) List() (error, interface{}) {
 	var resApis []system.APIs
-	if err := global.GORM.WithContext(sa.ctx).Model(&system.APIs{}).Where("api_group LIKE ? ", "%"+apiGroup+"%").
+	if err := global.GORM.WithContext(sa.ctx).Model(&system.APIs{}).
 		Find(&resApis).Error; err != nil {
 		return global.GetErr(sa.tips, err), nil
 	}

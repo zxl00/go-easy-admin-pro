@@ -22,7 +22,7 @@ type SysRole interface {
 	Create(req *reqSystem.CreateRoleReq) error
 	Delete(id int) error
 	Update(id int, req *reqSystem.CreateRoleReq) error
-	List(roleName string) (error, interface{})
+	List() (error, interface{})
 	Get(id int) (error, *system.Role)
 }
 type sysRole struct {
@@ -76,9 +76,9 @@ func (sr *sysRole) Update(id int, req *reqSystem.CreateRoleReq) error {
 	return sr.association(r, req.Users, req.Menus)
 }
 
-func (sr *sysRole) List(roleName string) (error, interface{}) {
+func (sr *sysRole) List() (error, interface{}) {
 	var resRole []system.Role
-	if err := global.GORM.WithContext(sr.ctx).Model(&system.Role{}).Where("name LIKE ?", "%"+roleName+"%").
+	if err := global.GORM.WithContext(sr.ctx).Model(&system.Role{}).
 		Preload("Users").Find(&resRole).Error; err != nil {
 		return global.GetErr(sr.tips, err), nil
 	}

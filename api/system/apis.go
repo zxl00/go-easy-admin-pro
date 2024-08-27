@@ -69,14 +69,7 @@ func (sa *sysApis) Update(ctx *gin.Context) {
 }
 
 func (sa *sysApis) List(ctx *gin.Context) {
-	params := new(struct {
-		ApiGroup string `form:"api_group"`
-	})
-	if err := ctx.ShouldBindQuery(&params); err != nil {
-		global.ReturnContext(ctx).Failed("参数错误", err.Error())
-		return
-	}
-	if err, data := system.NewSysApis(ctx).List(params.ApiGroup); err != nil {
+	if err, data := system.NewSysApis(ctx).List(); err != nil {
 		global.ReturnContext(ctx).Failed("查询失败", err.Error())
 		return
 	} else {

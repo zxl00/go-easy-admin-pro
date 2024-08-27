@@ -19,7 +19,7 @@ import (
 
 func RegisterRouters() *gin.Engine {
 	r := gin.New()
-	r.Use(middles.LogHandlerFunc(), gin.Recovery())
+	r.Use(middles.LogHandlerFunc(), gin.Recovery(), middles.Cors())
 	authMiddleware, err := middles.InitAuth()
 	if err != nil {
 		panic(err)
