@@ -17,7 +17,7 @@ import (
 
 type LdapInterface interface {
 	Create(ctx *gin.Context)
-	List(ctx *gin.Context)
+	Info(ctx *gin.Context)
 	Ping(ctx *gin.Context)
 }
 
@@ -40,8 +40,8 @@ func (s *sysLdap) Create(ctx *gin.Context) {
 	global.ReturnContext(ctx).Successful("创建或更新成功", nil)
 }
 
-func (s *sysLdap) List(ctx *gin.Context) {
-	err, ldap := system.NewSysLdap(ctx).List()
+func (s *sysLdap) Info(ctx *gin.Context) {
+	err, ldap := system.NewSysLdap(ctx).Info()
 	if err != nil {
 		global.ReturnContext(ctx).Failed("查询失败", err.Error())
 		return

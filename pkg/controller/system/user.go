@@ -40,7 +40,11 @@ func (su *sysUser) Create(req *reqSystem.CreateUserReq) error {
 		global.GeaLogger.Error("转换用户数据失败: ", err)
 		return errors.New("转换用户数据失败")
 	}
-	user.CreateBy = su.ctx.Value("username").(string)
+	if v, ok := su.ctx.Value("username").(string); ok {
+		user.CreateBy = v
+	} else {
+		user.CreateBy = "LDAP"
+	}
 	if err := global.GORM.WithContext(su.ctx).Create(user).Error; err != nil {
 		global.GeaLogger.Error("创建用户失败: ", err)
 		return errors.New("创建用户失败")

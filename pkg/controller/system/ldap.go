@@ -19,7 +19,7 @@ import (
 
 type SysLdap interface {
 	Create(req *system.Ldap) error
-	List() (error, *system.Ldap)
+	Info() (error, *system.Ldap)
 	Get() (error, *system.Ldap)
 	Ping(req *system.Ldap) error
 }
@@ -56,7 +56,7 @@ func (sl *sysLdap) Create(req *system.Ldap) error {
 
 // 获取
 
-func (sl *sysLdap) List() (error, *system.Ldap) {
+func (sl *sysLdap) Info() (error, *system.Ldap) {
 	ldap := new(system.Ldap)
 	if err := global.GORM.WithContext(sl.ctx).First(&ldap).Error; err != nil {
 		return global.GetErr(sl.tips, err), nil

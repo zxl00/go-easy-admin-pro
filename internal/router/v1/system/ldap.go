@@ -15,7 +15,7 @@ import (
 func Ldap(r *gin.RouterGroup) gin.IRoutes {
 	{
 		r.POST("/create", apiSystem.NewSysLdap().Create)
-		r.GET("/list", apiSystem.NewSysLdap().List)
+		r.GET("/info", apiSystem.NewSysLdap().Info)
 		r.POST("/ping", apiSystem.NewSysLdap().Ping)
 	}
 	return r

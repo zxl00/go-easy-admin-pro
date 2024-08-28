@@ -71,7 +71,6 @@ func (sl *sysLogin) LdapLogin(request *reqLogin.ReqLogin) (error, interface{}) {
 	// 登录成功,将用户信息入库
 	ok, userInfo := system.NewSysUser(sl.ctx).GetByUsername(request.Username)
 	if ok {
-		fmt.Println("写入数据库")
 		_ = system.NewSysUser(sl.ctx).Create(&createUser)
 		ok, userInfo = system.NewSysUser(sl.ctx).GetByUsername(request.Username)
 		if !ok && userInfo != nil {

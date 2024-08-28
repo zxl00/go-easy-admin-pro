@@ -56,6 +56,10 @@ func RegisterRouters() *gin.Engine {
 		{
 			routerSys.RBAC(RbacGroup)
 		}
+		LoginUserResource := PrivateGroup.Group("/sys/login")
+		{
+			routerLogin.Resource(LoginUserResource)
+		}
 	}
 
 	PublicGroup := r.Group("")

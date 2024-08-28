@@ -13,7 +13,7 @@ type CreateUserReq struct {
 	Avatar   string `json:"avatar"`
 	Email    string `json:"email" binding:"required,email"`
 	Phone    string `json:"phone" binding:"required"`
-	Roles    []int  `json:"roles" binding:"required"`
+	Roles    []int  `json:"roles"`
 }
 
 type UpdateUserReq struct {

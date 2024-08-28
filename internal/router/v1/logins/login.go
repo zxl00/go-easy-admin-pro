@@ -17,7 +17,13 @@ func Login(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) gin.IRoutes
 	{
 		r.POST("/ldap", authMiddleware.LoginHandler)
 		r.POST("/general", authMiddleware.LoginHandler)
-		r.GET("/info/:id", apiLogin.NewSysLogin().GetLoginUserResource)
+	}
+	return r
+}
+
+func Resource(r *gin.RouterGroup) gin.IRoutes {
+	{
+		r.GET("/info", apiLogin.NewSysLogin().GetLoginUserResource)
 	}
 	return r
 }

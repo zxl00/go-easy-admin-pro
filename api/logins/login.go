@@ -9,8 +9,6 @@ package logins
 
 import (
 	"github.com/gin-gonic/gin"
-	"strconv"
-
 	"go-easy-admin/pkg/controller/login"
 	"go-easy-admin/pkg/global"
 )
@@ -57,8 +55,14 @@ func NewSysLogin() LoginInterface {
 //}
 
 func (sl *sysLogin) GetLoginUserResource(ctx *gin.Context) {
-	id, _ := strconv.Atoi(ctx.Param("id"))
-	if err, data := login.GetLoginUserResource(id, ctx); err != nil {
+	var id uint
+	if v, exists := ctx.Get("id"); exists {
+		if uv, ok := v.(uint); ok {
+			id = uv
+		}
+	}
+
+	if err, data := login.GetLoginUserResource(int(id), ctx); err != nil {
 		global.ReturnContext(ctx).Failed("获取失败", nil)
 		return
 	} else {
