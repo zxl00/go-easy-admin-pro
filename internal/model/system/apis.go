@@ -11,7 +11,7 @@ import "go-easy-admin/internal/model"
 
 type APIs struct {
 	model.BaseModel
-	Path     string `json:"path" binding:"required"`
+	Path     string `gorm:"not null;unique" json:"path" binding:"required"`
 	Method   string `json:"method" binding:"required"`
 	Desc     string `json:"desc"  binding:"required"`
 	ApiGroup string `json:"apiGroup" binding:"required"`
