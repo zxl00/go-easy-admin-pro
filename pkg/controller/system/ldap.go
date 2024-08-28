@@ -79,9 +79,9 @@ func (sl *sysLdap) Ping(req *system.Ldap) error {
 		err error
 	)
 	if req.SSL == 1 {
-		ld, err = ldap.DialTLS("tcp", req.Address, &tls.Config{InsecureSkipVerify: true})
+		ld, err = ldap.DialURL("ldaps://"+req.Address, ldap.DialWithTLSConfig(&tls.Config{InsecureSkipVerify: true}))
 	} else {
-		ld, err = ldap.Dial("tcp", req.Address)
+		ld, err = ldap.DialURL("ldap://" + req.Address)
 	}
 	if err != nil {
 		return err
