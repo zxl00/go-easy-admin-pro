@@ -43,7 +43,6 @@ func RbacMiddle() gin.HandlerFunc {
 			}
 			// 获取请求路径
 			obj := ctx.FullPath()
-			fmt.Println("--->", obj)
 			// 获取请求方法
 			act := ctx.Request.Method
 			for _, s := range sub {

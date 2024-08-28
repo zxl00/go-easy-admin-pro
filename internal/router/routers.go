@@ -29,8 +29,8 @@ func RegisterRouters() *gin.Engine {
 		return
 	})
 	PrivateGroup := r.Group("")
-	//PrivateGroup.Use(authMiddleware.MiddlewareFunc(), middles.RbacMiddle())
-	PrivateGroup.Use(authMiddleware.MiddlewareFunc())
+	PrivateGroup.Use(authMiddleware.MiddlewareFunc(), middles.RbacMiddle())
+	//PrivateGroup.Use(authMiddleware.MiddlewareFunc())
 	{
 		UserGroup := PrivateGroup.Group("/sys/user")
 		{
