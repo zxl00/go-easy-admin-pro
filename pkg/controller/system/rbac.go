@@ -9,7 +9,6 @@ package system
 
 import (
 	"context"
-	"fmt"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
 	"go-easy-admin/pkg/global"
 )
@@ -57,8 +56,7 @@ func (sr *sysRbac) Delete(id int) bool {
 	// 根据ID查找权限
 	var casbinRule gormadapter.CasbinRule
 	global.GORM.Model(&casbinRule).WithContext(sr.ctx).Where("id = ?", id).First(&casbinRule)
-	fmt.Printf("%+v", casbinRule)
-	success, _ := global.CasbinCacheEnforcer.RemovePolicy(casbinRule.V0, casbinRule.V1, casbinRule.V2, casbinRule.V3)
+	success, _ := global.CasbinCacheEnforcer.RemovePolicy(casbinRule.V0, casbinRule.V1, casbinRule.V2, casbinRule.V3, casbinRule.V4)
 	return success
 }
 
