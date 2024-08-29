@@ -15,7 +15,7 @@ type APIs struct {
 	Method   string `json:"method" binding:"required"`
 	Desc     string `json:"desc"  binding:"required"`
 	ApiGroup string `json:"apiGroup" binding:"required"`
-	Menus    []Menu `gorm:"many2many:sys_menu_api;" json:"menus"`
+	//Menus    []Menu `gorm:"many2many:sys_menu_api;" json:"menus"`
 }
 
 func (*APIs) TableName() string {

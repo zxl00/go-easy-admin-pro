@@ -50,13 +50,10 @@ func (sa *sysApis) Delete(id int) error {
 	if err != nil {
 		return err
 	}
-	if err = global.GORM.WithContext(sa.ctx).Model(&api).Association("Menus").Clear(); err != nil {
-		return global.OtherErr(err, "删除关联菜单失败")
-	}
 	if err = global.GORM.WithContext(sa.ctx).Delete(&api).Error; err != nil {
 		return global.DeleteErr(sa.tips, err)
 	}
-	return nil
+	return NewSysRBAC(sa.ctx).DeleteByAPIsID(id)
 }
 
 func (sa *sysApis) Update(id int, req *reqSystem.UpdateAPIsReq) error {
@@ -68,7 +65,8 @@ func (sa *sysApis) Update(id int, req *reqSystem.UpdateAPIsReq) error {
 	if err := global.GORM.WithContext(sa.ctx).Model(&system.APIs{}).Where("id = ?", id).Updates(api).Error; err != nil {
 		return global.UpdateErr(sa.tips, err)
 	}
-	return nil
+	_, resApi := sa.Get(id)
+	return NewSysRBAC(sa.ctx).UpdateByAPI(resApi)
 
 }
 
@@ -83,7 +81,7 @@ func (sa *sysApis) List() (error, interface{}) {
 
 func (sa *sysApis) Get(id int) (error, *system.APIs) {
 	api := new(system.APIs)
-	if err := global.GORM.WithContext(sa.ctx).Model(&system.APIs{}).Where("id = ?", id).Preload("Menus").First(&api).Error; err != nil {
+	if err := global.GORM.WithContext(sa.ctx).Model(&system.APIs{}).Where("id = ?", id).First(&api).Error; err != nil {
 		return global.GetErr(sa.tips, err), nil
 	}
 	return nil, api

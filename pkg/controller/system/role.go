@@ -87,7 +87,7 @@ func (sr *sysRole) List() (error, interface{}) {
 func (sr *sysRole) Get(id int) (error, *system.Role) {
 	var roles system.Role
 	if err := global.GORM.WithContext(sr.ctx).Model(&system.Role{}).Where("id = ?", id).Preload("Users").
-		Preload("Menus").Preload("Menus.APIs").First(&roles).Error; err != nil {
+		Preload("Menus").First(&roles).Error; err != nil {
 		return global.GetErr(sr.tips, err), nil
 	}
 	return nil, &roles

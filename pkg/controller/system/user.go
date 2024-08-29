@@ -118,7 +118,6 @@ func (su *sysUser) Get(id int) (error, *system.User) {
 	if err := global.GORM.WithContext(su.ctx).Model(system.User{}).
 		Preload("Roles").
 		Preload("Roles.Menus").
-		Preload("Roles.Menus.APIs").
 		Where("id = ?", id).
 		First(&user).Error; err != nil {
 		global.GeaLogger.Error("查询用户失败: ", err)
@@ -179,19 +178,4 @@ func (su *sysUser) clear(users ...*system.User) {
 			continue
 		}
 	}
-}
-
-// 菜单去重
-
-func removeMenu(menus []system.Menu) (resMenus []system.Menu) {
-	menuList := make(map[uint]system.Menu, 0)
-	for _, item := range menus {
-		if _, ok := menuList[item.ID]; !ok {
-			menuList[item.ID] = item
-		}
-	}
-	for _, item := range menuList {
-		resMenus = append(resMenus, item)
-	}
-	return resMenus
 }

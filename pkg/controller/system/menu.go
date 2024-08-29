@@ -43,9 +43,9 @@ func (sm *sysMenu) Create(req *reqSystem.CreateMenuReq) error {
 	if err := global.GORM.WithContext(sm.ctx).Create(&menu).Error; err != nil {
 		return global.CreateErr(sm.tips, err)
 	}
-	if len(req.APIs) > 0 {
-		return sm.association(menu, req.APIs)
-	}
+	//if len(req.APIs) > 0 {
+	//	return sm.association(menu, req.APIs)
+	//}
 	return nil
 }
 
@@ -82,19 +82,19 @@ func (sm *sysMenu) Update(id int, req *reqSystem.CreateMenuReq) error {
 	if err := global.GORM.WithContext(sm.ctx).Where("id = ?", id).Updates(&menu).Error; err != nil {
 		return global.UpdateErr(sm.tips, err)
 	}
-	err, m := sm.Get(id)
-	if err != nil {
-		return err
-	}
-	if len(req.APIs) > 0 {
-		return sm.association(m, req.APIs)
-	}
+	//err, m := sm.Get(id)
+	//if err != nil {
+	//	return err
+	//}
+	//if len(req.APIs) > 0 {
+	//	return sm.association(m, req.APIs)
+	//}
 	return nil
 }
 
 func (sm *sysMenu) List() (error, interface{}) {
 	var menus []system.Menu
-	if err := global.GORM.WithContext(sm.ctx).Where("parent_id = ?", 0).Preload("APIs").Find(&menus).Error; err != nil {
+	if err := global.GORM.WithContext(sm.ctx).Where("parent_id = ?", 0).Find(&menus).Error; err != nil {
 		return global.GetErr(sm.tips, err), nil
 	}
 	for i := range menus {
@@ -107,7 +107,7 @@ func (sm *sysMenu) List() (error, interface{}) {
 }
 func (sm *sysMenu) Get(id int) (error, *system.Menu) {
 	var menu system.Menu
-	if err := global.GORM.WithContext(sm.ctx).Where("id = ?", id).Preload("APIs").First(&menu).Error; err != nil {
+	if err := global.GORM.WithContext(sm.ctx).Where("id = ?", id).First(&menu).Error; err != nil {
 		return global.GetErr(sm.tips, err), nil
 	}
 	if err := GetChildren(&menu); err != nil {
@@ -119,7 +119,7 @@ func (sm *sysMenu) Get(id int) (error, *system.Menu) {
 // 获取子菜单
 
 func GetChildren(menu *system.Menu) error {
-	if err := global.GORM.Where("parent_id = ?", menu.ID).Preload("APIs").
+	if err := global.GORM.Where("parent_id = ?", menu.ID).
 		Find(&menu.Children).Error; err != nil {
 		return global.OtherErr(errors.New("获取子菜单失败"), err.Error())
 	}
@@ -163,7 +163,7 @@ func (sm *sysMenu) association(menu *system.Menu, apisIDs []int) error {
 
 func (sm *sysMenu) clear(menus ...*system.Menu) {
 	for _, menu := range menus {
-		_ = global.GORM.WithContext(sm.ctx).Model(&menu).Association("APIs").Clear()
+		//_ = global.GORM.WithContext(sm.ctx).Model(&menu).Association("APIs").Clear()
 		_ = global.GORM.WithContext(sm.ctx).Model(&menu).Association("Roles").Clear()
 	}
 	//MenuSlice = nil

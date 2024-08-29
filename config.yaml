@@ -29,6 +29,6 @@ jwt:
   # jwt加密因子
   key: anruo
   #  jwt token过期时间 单位为小时
-  timeout: 1
+  timeout: 100
   # jwt token刷新时间 单位为小时
   maxRefresh: 1

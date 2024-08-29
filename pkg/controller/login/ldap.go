@@ -89,7 +89,7 @@ func GetLoginUserResource(id int, ctx context.Context) (error, interface{}) {
 	if err := global.GORM.WithContext(ctx).Model(&modeSystem.User{}).
 		Preload("Roles").
 		Preload("Roles.Menus").
-		Preload("Roles.Menus.APIs").
+		//Preload("Roles.Menus.APIs").
 		Where("id = ?", id).
 		First(&user).Error; err != nil {
 		global.GeaLogger.Error("查询用户失败: ", err)

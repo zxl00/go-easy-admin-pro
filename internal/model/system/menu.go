@@ -21,7 +21,7 @@ type Menu struct {
 	Component string `gorm:"comment:'前端路径';size:64" json:"component"`
 	Children  []Menu `gorm:"-" json:"children"  copier:"-"`
 	Roles     []Role `gorm:"many2many:sys_role_menu;" json:"-"  copier:"-"`
-	APIs      []APIs `gorm:"many2many:sys_menu_api;" json:"apis"  copier:"-"`
+	//APIs      []APIs `gorm:"many2many:sys_menu_api;" json:"apis"  copier:"-"`
 }
 
 func (*Menu) TableName() string {

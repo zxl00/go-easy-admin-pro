@@ -15,9 +15,7 @@ import (
 func RBAC(r *gin.RouterGroup) gin.IRoutes {
 	{
 		r.POST("/create", apiSystem.NewSysRBAC().Create)
-		r.POST("/delete/:id", apiSystem.NewSysRBAC().Delete)
-		r.POST("/update/:id", apiSystem.NewSysRBAC().Update)
-		r.GET("/list", apiSystem.NewSysRBAC().List)
+		r.GET("/role/get/:id", apiSystem.NewSysRBAC().GetRbacByRoleID)
 	}
 	return r
 }

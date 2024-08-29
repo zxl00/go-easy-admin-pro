@@ -16,5 +16,5 @@ type CreateMenuReq struct {
 	Sort      int    `json:"sort"`
 	ParentId  uint   `json:"parent_id"`
 	Component string `json:"component"`
-	APIs      []int  `json:"apis"`
+	//APIs      []int  `json:"apis"`
 }

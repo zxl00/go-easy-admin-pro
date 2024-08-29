@@ -9,17 +9,20 @@ package system
 
 import (
 	"context"
+	"fmt"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
+	"go-easy-admin/internal/model/system"
 	"go-easy-admin/pkg/global"
+	"strconv"
 )
 
 // casbin 权限
 
 type SysRBAC interface {
-	Create(rules [][]string) error
-	Delete(id int) bool
-	Update(id int, rule []string) error
-	List(v0, v1, v2, v3 string) (error, interface{})
+	Create(apiIDs []int, roleID int) error
+	GetRbacByRoleID(roleID int) []int
+	DeleteByAPIsID(apiID int) error
+	UpdateByAPI(api *system.APIs) error
 }
 type sysRbac struct {
 	tips string
@@ -32,56 +35,88 @@ func NewSysRBAC(ctx context.Context) SysRBAC {
 
 // 添加权限
 
-func (sr *sysRbac) Create(rules [][]string) error {
+func (sr *sysRbac) Create(apiIDs []int, roleID int) error {
 	var casbinRules []gormadapter.CasbinRule
-	for i := range rules {
+	for _, id := range apiIDs {
+		err, api := NewSysApis(sr.ctx).Get(id)
+		if err != nil {
+			continue
+		}
+		if api.Desc == "" {
+			api.Desc = "系统添加描述信息"
+		}
 		casbinRules = append(casbinRules, gormadapter.CasbinRule{
 			Ptype: "p",
-			V0:    rules[i][0],
-			V1:    rules[i][1],
-			V2:    rules[i][2],
-			V3:    rules[i][3],
+			V0:    fmt.Sprintf("%d", roleID),
+			V1:    api.Path,
+			V2:    api.Method,
+			V3:    api.Desc,
 			V4:    sr.ctx.Value("username").(string),
+			V5:    fmt.Sprintf("%d", api.ID),
 		})
 	}
-	// 这里需要写数据库
+	// 清空角色对应权限
+	sr.DeleteByRoleID(roleID)
 	if err := global.GORM.WithContext(sr.ctx).Create(&casbinRules).Error; err != nil {
 		return err
 	}
 	freshRBAC()
 	return nil
+
 }
 
-func (sr *sysRbac) Delete(id int) bool {
-	// 根据ID查找权限
-	var casbinRule gormadapter.CasbinRule
-	global.GORM.Model(&casbinRule).WithContext(sr.ctx).Where("id = ?", id).First(&casbinRule)
-	success, _ := global.CasbinCacheEnforcer.RemovePolicy(casbinRule.V0, casbinRule.V1, casbinRule.V2, casbinRule.V3, casbinRule.V4)
-	return success
-}
-
-func (sr *sysRbac) Update(id int, rule []string) error {
-	var casbinRule = gormadapter.CasbinRule{
-		Ptype: "p",
-		V0:    rule[0],
-		V1:    rule[1],
-		V2:    rule[2],
-		V3:    rule[3],
+func (sr *sysRbac) UpdateByAPI(api *system.APIs) error {
+	var updateCasbinRule = gormadapter.CasbinRule{
+		V1: api.Path,
+		V2: api.Method,
+		V3: api.Desc,
 	}
-	if err := global.GORM.Model(&casbinRule).WithContext(sr.ctx).Where("id = ?", id).Updates(casbinRule).Error; err != nil {
+	if err := global.GORM.Model(&gormadapter.CasbinRule{}).WithContext(sr.ctx).
+		Where("v5 = ?", api.ID).
+		Updates(&updateCasbinRule).Error; err != nil {
 		return err
 	}
 	freshRBAC()
 	return nil
 }
 
-func (sr *sysRbac) List(v0, v1, v2, v3 string) (error, interface{}) {
-	var resCasbinRules []gormadapter.CasbinRule
-	if err := global.GORM.Model(&gormadapter.CasbinRule{}).WithContext(sr.ctx).Where("v0 LIKE ? and v1 LIKE ? and v2 LIKE ? and v3 LIKE ?",
-		"%"+v0+"%", "%"+v1+"%", "%"+v2+"%", "%"+v3+"%").Find(&resCasbinRules).Error; err != nil {
-		return err, nil
+func (sr *sysRbac) DeleteByRoleID(roleID int) {
+	// 根据ID查找权限
+	var casbinRules []gormadapter.CasbinRule
+	global.GORM.Model(&casbinRules).WithContext(sr.ctx).Where("v0 = ?", roleID).Find(&casbinRules)
+	if len(casbinRules) < 1 {
+		return
 	}
-	return nil, &resCasbinRules
+	for _, rule := range casbinRules {
+		_, _ = global.CasbinCacheEnforcer.RemovePolicy(rule.V0, rule.V1, rule.V2, rule.V3, rule.V4)
+	}
+	return
+}
+
+func (sr *sysRbac) GetRbacByRoleID(roleID int) []int {
+	var (
+		casbinRule []gormadapter.CasbinRule
+		apiIDs     []int
+	)
+	global.GORM.Model(&casbinRule).WithContext(sr.ctx).Where("v0 = ?", roleID).Find(&casbinRule)
+	if len(casbinRule) < 1 {
+		return nil
+	}
+	for _, rbac := range casbinRule {
+		id, _ := strconv.Atoi(rbac.V5)
+		apiIDs = append(apiIDs, id)
+	}
+	return apiIDs
+}
+
+func (sr *sysRbac) DeleteByAPIsID(apiID int) error {
+	var casbinRule gormadapter.CasbinRule
+	if err := global.GORM.Model(&casbinRule).WithContext(sr.ctx).Where("v5 = ?", apiID).First(&casbinRule).Error; err != nil {
+		return err
+	}
+	_, err := global.CasbinCacheEnforcer.RemovePolicy(casbinRule.V0, casbinRule.V1, casbinRule.V2, casbinRule.V3, casbinRule.V4, casbinRule.V5)
+	freshRBAC()
+	return err
 }
 
 func freshRBAC() {
