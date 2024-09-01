@@ -39,6 +39,9 @@ func RbacMiddle() gin.HandlerFunc {
 			}
 			var sub []uint
 			for _, role := range userInfo.Roles {
+				if role.Status != 1 {
+					continue
+				}
 				sub = append(sub, role.ID)
 			}
 			// 获取请求路径
