@@ -8,6 +8,7 @@
 package middles
 
 import (
+	"errors"
 	"fmt"
 	"go-easy-admin/internal/model/system"
 	"go-easy-admin/pkg/global"
@@ -58,6 +59,9 @@ func loginFunc(ctx *gin.Context) (interface{}, error) {
 		utils.TagAes(&aesLogin)
 		err, user := login.NewSysLogin(ctx).GeneralLogin(&aesLogin)
 		if err == nil {
+			if user.(*system.User).Status != 1 {
+				return nil, errors.New("该用户已被禁用")
+			}
 			ctx.Set("id", user.(*system.User).ID)
 			return user, nil
 		}
@@ -66,12 +70,15 @@ func loginFunc(ctx *gin.Context) (interface{}, error) {
 		// ldap登录
 		err, user := login.NewSysLogin(ctx).LdapLogin(&loginUser)
 		if err == nil {
+			if user.(*system.User).Status != 1 {
+				return nil, errors.New("该用户已被禁用")
+			}
 			ctx.Set("id", user.(*system.User).ID)
 			return user, nil
 
 		}
 	}
-	return nil, jwt.ErrFailedAuthentication
+	return nil, errors.New("用户名或密码错误")
 }
 
 // 登录2

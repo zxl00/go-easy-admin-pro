@@ -21,6 +21,7 @@ type UpdateUserReq struct {
 	Username string `json:"userName"`            // 用户登录名
 	Password string `json:"password" aes:"true"` // 用户登录密码
 	Avatar   string `json:"avatar"`
+	Status   uint   `json:"status"`
 	Email    string `json:"email"`
 	Phone    string `json:"phone"`
 	Roles    []int  `json:"roles"`
