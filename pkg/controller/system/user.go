@@ -19,7 +19,7 @@ import (
 
 type SysUser interface {
 	Create(req *reqSystem.CreateUserReq) error
-	Delete(ids []int) error
+	Delete(id int) error
 	Update(id int, req *reqSystem.UpdateUserReq) error
 	List(userName string, limit, page int) (error, interface{})
 	Get(id int) (error, *system.User)
@@ -58,18 +58,14 @@ func (su *sysUser) Create(req *reqSystem.CreateUserReq) error {
 	return nil
 }
 
-func (su *sysUser) Delete(ids []int) error {
+func (su *sysUser) Delete(id int) error {
 	var users []*system.User
-	if err := global.GORM.WithContext(su.ctx).Where("id IN ?", ids).Find(&users).Error; err != nil {
+	if err := global.GORM.WithContext(su.ctx).Where("id = ?", id).First(&users).Error; err != nil {
 		global.GeaLogger.Error("删除用户失败: ", err)
 		return errors.New("删除用户失败")
 	}
-	if len(users) != len(ids) {
-		global.GeaLogger.Error("部分用户不存在")
-		return errors.New("部分用户不存在")
-	}
 	su.clear(users...)
-	if err := global.GORM.WithContext(su.ctx).Delete(&users, ids).Error; err != nil {
+	if err := global.GORM.WithContext(su.ctx).Delete(&users, id).Error; err != nil {
 		global.GeaLogger.Error("删除用户失败: ", err)
 		return errors.New("删除用户失败")
 	}

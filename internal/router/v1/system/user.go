@@ -17,7 +17,7 @@ import (
 func User(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) gin.IRoutes {
 	{
 		r.POST("/create", apiSystem.NewSysUser().Create)
-		r.POST("/delete", apiSystem.NewSysUser().Delete)
+		r.POST("/delete/:id", apiSystem.NewSysUser().Delete)
 		r.POST("/update/:id", apiSystem.NewSysUser().Update)
 		r.GET("/list", apiSystem.NewSysUser().List)
 		r.GET("/get/:id", apiSystem.NewSysUser().Get)

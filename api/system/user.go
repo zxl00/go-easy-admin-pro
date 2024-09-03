@@ -45,14 +45,8 @@ func (su *sysUser) Create(ctx *gin.Context) {
 	global.ReturnContext(ctx).Successful("创建成功", nil)
 }
 func (su *sysUser) Delete(ctx *gin.Context) {
-	params := new(struct {
-		Ids []int `json:"ids"`
-	})
-	if err := ctx.ShouldBindJSON(&params); err != nil {
-		global.ReturnContext(ctx).Failed("参数错误", err.Error())
-		return
-	}
-	if err := system.NewSysUser(ctx).Delete(params.Ids); err != nil {
+	id, _ := strconv.Atoi(ctx.Param("id"))
+	if err := system.NewSysUser(ctx).Delete(id); err != nil {
 		global.ReturnContext(ctx).Failed("删除失败", err.Error())
 		return
 	}
